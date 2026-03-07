@@ -171,4 +171,5 @@ Love, [FRAN]</div>
         function draw() { ctx.fillStyle = "#f1f5f9"; ctx.fillRect(0,0,canvas.width, canvas.height); for(let i=0; i<snake.length; i++){ ctx.fillText(i==0 ? "💙" : "🔹", snake[i].x, snake[i].y + 15); } ctx.fillText("🍎", food.x, food.y + 15); let snakeX = snake[0].x; let snakeY = snake[0].y; if(d == "LEFT") snakeX -= box; if(d == "UP") snakeY -= box; if(d == "RIGHT") snakeX += box; if(d == "DOWN") snakeY += box; if(snakeX < 0) snakeX = canvas.width - box; if(snakeX >= canvas.width) snakeX = 0; if(snakeY < 0) snakeY = canvas.height - box; if(snakeY >= canvas.height) snakeY = 0; if(snakeX == food.x && snakeY == food.y){ food = {x: Math.floor(Math.random()*10)*box, y: Math.floor(Math.random()*10)*box}; if(snake.length % 5 === 0) { document.getElementById('verseDisplay').innerText = "✨ " + bibleVerses[Math.floor(Math.random() * bibleVerses.length)]; } } else { snake.pop(); } snake.unshift({x: snakeX, y: snakeY}); document.getElementById('score').innerText = "Points: " + (snake.length - 1); }
     </script>
 </body>
+
 </html>
