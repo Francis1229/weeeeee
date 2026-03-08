@@ -22,25 +22,39 @@
             font-family: 'Fredoka', sans-serif;
             margin: 0; display: flex; flex-direction: column; align-items: center;
             min-height: 100vh; overflow-x: hidden;
-            position: relative; /* Needed for absolute cats */
+            position: relative;
         }
 
-        /* --- NEW CAT STYLING --- */
+        /* --- DECORATIONS --- */
         .corner-cat {
             position: fixed;
             font-size: 2.5rem;
             z-index: 100;
-            pointer-events: none; /* So they don't block clicks */
+            pointer-events: none;
             animation: catFloat 3s infinite ease-in-out;
         }
         .top-left { top: 15px; left: 15px; }
         .top-right { top: 15px; right: 15px; }
         .bottom-left { bottom: 15px; left: 15px; }
-        .bottom-right { bottom: 15px; right: 15px; }
+        
+        /* Updated dancing GIF styling */
+        .dancing-gif {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            width: 100px;
+            z-index: 99;
+            pointer-events: none;
+            animation: bounce 2s infinite ease-in-out;
+        }
 
         @keyframes catFloat {
             0%, 100% { transform: translateY(0) rotate(-5deg); }
             50% { transform: translateY(-10px) rotate(5deg); }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
         /* ----------------------- */
 
@@ -113,7 +127,7 @@
     <div class="corner-cat top-left">🐱</div>
     <div class="corner-cat top-right">🐾</div>
     <div class="corner-cat bottom-left">😺</div>
-    <div class="corner-cat bottom-right">🐈</div>
+    <img src="hihi.gif" alt="Cute Dancing" class="dancing-gif">
 
     <audio id="bgMusic" preload="auto"><source src="daniel.mp3" type="audio/mpeg"></audio>
 
