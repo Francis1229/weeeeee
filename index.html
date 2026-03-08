@@ -18,12 +18,31 @@
         * { touch-action: manipulation; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
-            /* Changed to solid light blue background */
             background: #e0f2fe;
             font-family: 'Fredoka', sans-serif;
             margin: 0; display: flex; flex-direction: column; align-items: center;
             min-height: 100vh; overflow-x: hidden;
+            position: relative; /* Needed for absolute cats */
         }
+
+        /* --- NEW CAT STYLING --- */
+        .corner-cat {
+            position: fixed;
+            font-size: 2.5rem;
+            z-index: 100;
+            pointer-events: none; /* So they don't block clicks */
+            animation: catFloat 3s infinite ease-in-out;
+        }
+        .top-left { top: 15px; left: 15px; }
+        .top-right { top: 15px; right: 15px; }
+        .bottom-left { bottom: 15px; left: 15px; }
+        .bottom-right { bottom: 15px; right: 15px; }
+
+        @keyframes catFloat {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+        /* ----------------------- */
 
         .page { display: none; width: 100%; flex-direction: column; align-items: center; padding: 15px; z-index: 10; }
         .active-page { display: flex; }
@@ -39,13 +58,11 @@
         .pulse-text { font-size: 2.2rem; color: #0369a1; animation: pulse 2s infinite; margin-bottom: 10px; font-weight: 600; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* Animations */
         @keyframes portal-spin { 100% { transform: rotate(360deg); } }
         @keyframes wiggle { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
         @keyframes popUp { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @keyframes heartbeat { 0%, 100% { transform: scale(1); } 25% { transform: scale(1.05); } }
 
-        /* Portal Styling with Fredoka font */
         .portal {
             width: 120px; height: 120px;
             border-radius: 50%;
@@ -82,7 +99,6 @@
             background: white; padding: 40px 20px; border-radius: 40px; text-align: center; 
             border: 6px solid var(--heart-red); width: 85%; max-width: 350px;
             position: relative; 
-            /* Added heartbeat animation to popUp */
             animation: popUp 0.6s ease-out, heartbeat 1.5s infinite;
         }
 
@@ -94,6 +110,11 @@
     </style>
 </head>
 <body>
+    <div class="corner-cat top-left">🐱</div>
+    <div class="corner-cat top-right">🐾</div>
+    <div class="corner-cat bottom-left">😺</div>
+    <div class="corner-cat bottom-right">🐈</div>
+
     <audio id="bgMusic" preload="auto"><source src="daniel.mp3" type="audio/mpeg"></audio>
 
     <div id="loginPage" class="page active-page">
@@ -160,17 +181,99 @@ Love, [FRAN]</div>
     <script>
         const bibleVerses = ["“I have found the one whom my soul loves.” - Song of Solomon 3:4", "“Love is patient, love is kind.” - 1 Corinthians 13:4", "“We love because he first loved us.” - 1 John 4:19", "“Let all that you do be done in love.” - 1 Corinthians 16:14"];
         const bgMusic = document.getElementById('bgMusic');
-        document.getElementById('loginBtn').addEventListener('click', () => { if(document.getElementById('loginInput').value.toLowerCase().trim() === 'jam') { document.getElementById('loginPage').classList.remove('active-page'); document.getElementById('page1').classList.add('active-page'); initSnake(); } });
+        
+        document.getElementById('loginBtn').addEventListener('click', () => { 
+            if(document.getElementById('loginInput').value.toLowerCase().trim() === 'jam') { 
+                document.getElementById('loginPage').classList.remove('active-page'); 
+                document.getElementById('page1').classList.add('active-page'); 
+                initSnake(); 
+            } 
+        });
+
         document.getElementById('envelope').addEventListener('click', function() { this.classList.toggle('open'); });
-        document.getElementById('toSecretBtn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('page1').classList.remove('active-page'); document.getElementById('page2').classList.add('active-page'); });
-        document.getElementById('nickBtn').addEventListener('click', () => { if(document.getElementById('nickInput').value.toLowerCase().trim() === 'bebiii') { document.getElementById('loveModal').style.display = 'flex'; bgMusic.muted = false; bgMusic.play().catch(e => console.log(e)); spawnHearts(); } else { document.getElementById('errorMsg').style.display = 'block'; } });
-        function spawnHearts() { for(let i=0; i<50; i++) { setTimeout(() => { const heart = document.createElement('div'); heart.classList.add('confetti-heart'); heart.innerHTML = ['💙','💖','🍓','✨'][Math.floor(Math.random()*4)]; heart.style.left = Math.random() * 100 + 'vw'; heart.style.top = '-5vh'; heart.style.fontSize = (Math.random() * 20 + 20) + 'px'; document.body.appendChild(heart); }, i * 100); } }
-        const canvas = document.getElementById("snakeCanvas"); const ctx = canvas.getContext("2d"); const box = 20; let snake, food, d, gameInterval;
-        function initSnake() { snake = [{x: 4 * box, y: 5 * box}]; food = {x: Math.floor(Math.random()*10)*box, y: Math.floor(Math.random()*10)*box}; d = "RIGHT"; if(gameInterval) clearInterval(gameInterval); gameInterval = setInterval(draw, 200); }
-        document.getElementById('upBtn').addEventListener('click', () => { if(d != "DOWN") d = "UP"; }); document.getElementById('downBtn').addEventListener('click', () => { if(d != "UP") d = "DOWN"; }); document.getElementById('leftBtn').addEventListener('click', () => { if(d != "RIGHT") d = "LEFT"; }); document.getElementById('rightBtn').addEventListener('click', () => { if(d != "LEFT") d = "RIGHT"; });
-        function draw() { ctx.fillStyle = "#f1f5f9"; ctx.fillRect(0,0,canvas.width, canvas.height); for(let i=0; i<snake.length; i++){ ctx.fillText(i==0 ? "💙" : "🔹", snake[i].x, snake[i].y + 15); } ctx.fillText("🍎", food.x, food.y + 15); let snakeX = snake[0].x; let snakeY = snake[0].y; if(d == "LEFT") snakeX -= box; if(d == "UP") snakeY -= box; if(d == "RIGHT") snakeX += box; if(d == "DOWN") snakeY += box; if(snakeX < 0) snakeX = canvas.width - box; if(snakeX >= canvas.width) snakeX = 0; if(snakeY < 0) snakeY = canvas.height - box; if(snakeY >= canvas.height) snakeY = 0; if(snakeX == food.x && snakeY == food.y){ food = {x: Math.floor(Math.random()*10)*box, y: Math.floor(Math.random()*10)*box}; if(snake.length % 5 === 0) { document.getElementById('verseDisplay').innerText = "✨ " + bibleVerses[Math.floor(Math.random() * bibleVerses.length)]; } } else { snake.pop(); } snake.unshift({x: snakeX, y: snakeY}); document.getElementById('score').innerText = "Points: " + (snake.length - 1); }
+
+        document.getElementById('toSecretBtn').addEventListener('click', (e) => { 
+            e.stopPropagation(); 
+            document.getElementById('page1').classList.remove('active-page'); 
+            document.getElementById('page2').classList.add('active-page'); 
+        });
+
+        document.getElementById('nickBtn').addEventListener('click', () => { 
+            if(document.getElementById('nickInput').value.toLowerCase().trim() === 'bebiii') { 
+                document.getElementById('loveModal').style.display = 'flex'; 
+                bgMusic.muted = false; 
+                bgMusic.play().catch(e => console.log(e)); 
+                spawnHearts(); 
+            } else { 
+                document.getElementById('errorMsg').style.display = 'block'; 
+            } 
+        });
+
+        function spawnHearts() { 
+            for(let i=0; i<50; i++) { 
+                setTimeout(() => { 
+                    const heart = document.createElement('div'); 
+                    heart.classList.add('confetti-heart'); 
+                    heart.innerHTML = ['💙','💖','🍓','✨'][Math.floor(Math.random()*4)]; 
+                    heart.style.left = Math.random() * 100 + 'vw'; 
+                    heart.style.top = '-5vh'; 
+                    heart.style.fontSize = (Math.random() * 20 + 20) + 'px'; 
+                    document.body.appendChild(heart); 
+                }, i * 100); 
+            } 
+        }
+
+        const canvas = document.getElementById("snakeCanvas"); 
+        const ctx = canvas.getContext("2d"); 
+        const box = 20; 
+        let snake, food, d, gameInterval;
+
+        function initSnake() { 
+            snake = [{x: 4 * box, y: 5 * box}]; 
+            food = {x: Math.floor(Math.random()*10)*box, y: Math.floor(Math.random()*10)*box}; 
+            d = "RIGHT"; 
+            if(gameInterval) clearInterval(gameInterval); 
+            gameInterval = setInterval(draw, 200); 
+        }
+
+        document.getElementById('upBtn').addEventListener('click', () => { if(d != "DOWN") d = "UP"; }); 
+        document.getElementById('downBtn').addEventListener('click', () => { if(d != "UP") d = "DOWN"; }); 
+        document.getElementById('leftBtn').addEventListener('click', () => { if(d != "RIGHT") d = "LEFT"; }); 
+        document.getElementById('rightBtn').addEventListener('click', () => { if(d != "LEFT") d = "RIGHT"; });
+
+        function draw() { 
+            ctx.fillStyle = "#f1f5f9"; 
+            ctx.fillRect(0,0,canvas.width, canvas.height); 
+            for(let i=0; i<snake.length; i++){ 
+                ctx.fillText(i==0 ? "💙" : "🔹", snake[i].x, snake[i].y + 15); 
+            } 
+            ctx.fillText("🍎", food.x, food.y + 15); 
+            
+            let snakeX = snake[0].x; 
+            let snakeY = snake[0].y; 
+
+            if(d == "LEFT") snakeX -= box; 
+            if(d == "UP") snakeY -= box; 
+            if(d == "RIGHT") snakeX += box; 
+            if(d == "DOWN") snakeY += box; 
+
+            if(snakeX < 0) snakeX = canvas.width - box; 
+            if(snakeX >= canvas.width) snakeX = 0; 
+            if(snakeY < 0) snakeY = canvas.height - box; 
+            if(snakeY >= canvas.height) snakeY = 0; 
+
+            if(snakeX == food.x && snakeY == food.y){ 
+                food = {x: Math.floor(Math.random()*10)*box, y: Math.floor(Math.random()*10)*box}; 
+                if(snake.length % 5 === 0) { 
+                    document.getElementById('verseDisplay').innerText = "✨ " + bibleVerses[Math.floor(Math.random() * bibleVerses.length)]; 
+                } 
+            } else { 
+                snake.pop(); 
+            } 
+
+            snake.unshift({x: snakeX, y: snakeY}); 
+            document.getElementById('score').innerText = "Points: " + (snake.length - 1); 
+        }
     </script>
 </body>
-
 </html>
-
